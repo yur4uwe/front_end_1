@@ -80,7 +80,7 @@ async function Dashboard(userAuthority) {
     const userElement = document.createElement("p");
     userElement.textContent = `Welcome to dashboard!`;
 
-    titleElement.appendChild(userElement);
+    titleWrapper.appendChild(userElement);
 
     const logoutButton = document.createElement("button");
     logoutButton.textContent = "Logout";

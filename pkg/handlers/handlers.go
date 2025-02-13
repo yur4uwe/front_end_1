@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	hashing "fr_lab_1/pkg/hashing"
 	token "fr_lab_1/pkg/token"
@@ -194,6 +195,20 @@ func Users(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(user_data)
+}
+
+func ModifyUser(w http.ResponseWriter, r *http.Request) {
+	log.Println("Get user reached")
+	id, err := strconv.Atoi(r.FormValue("id"))
+	if err != nil {
+		http.Error(w, "Cant parse id", http.StatusBadRequest)
+		return
+	}
+
+	user.GetUserByID(id)
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{})
 }
 
 func Authority(w http.ResponseWriter, r *http.Request) {
