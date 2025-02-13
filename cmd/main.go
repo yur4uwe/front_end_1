@@ -19,6 +19,7 @@ func main() {
 	http.HandleFunc("/api/logout", handlers.Logout)
 	http.HandleFunc("/api/users", handlers.Users)
 	http.HandleFunc("/api/authority", handlers.Authority)
+	http.HandleFunc("/api/user/", handlers.ModifyUser)
 
 	// Apply middleware
 	handler := middleware.LoggingMiddleware(middleware.AuthMiddleware(http.DefaultServeMux))
