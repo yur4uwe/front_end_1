@@ -12,6 +12,10 @@ func main() {
 	fs := http.FileServer(http.Dir("../static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	// Serve photo files from the "uploads" directory
+	photoFs := http.FileServer(http.Dir("../uploads"))
+	http.Handle("/uploads/", http.StripPrefix("/uploads/", photoFs))
+
 	// Handle routes
 	http.HandleFunc("/", handlers.Home)
 	http.HandleFunc("/api/login", handlers.Login)
@@ -19,7 +23,7 @@ func main() {
 	http.HandleFunc("/api/logout", handlers.Logout)
 	http.HandleFunc("/api/users", handlers.Users)
 	http.HandleFunc("/api/authority", handlers.Authority)
-	http.HandleFunc("/api/user/", handlers.ModifyUser)
+	http.HandleFunc("/api/users/", handlers.UserHandler)
 
 	// Apply middleware
 	handler := middleware.LoggingMiddleware(middleware.AuthMiddleware(http.DefaultServeMux))

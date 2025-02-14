@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
-	"fmt"
 
 	hashing "fr_lab_1/pkg/hashing"
 )
@@ -221,4 +221,80 @@ func DeleteUser(email string) error {
 	}
 
 	return writeUserData(user_data)
+}
+
+func DeleteUserByID(id int) error {
+	user_data, err := getUserData()
+	if err != nil {
+		log.Println("Error getting user data:", err)
+		return err
+	}
+
+	for i := 0; i < len(user_data); i++ {
+		if user_data[i].ID == id {
+			user_data = append(user_data[:i], user_data[i+1:]...)
+			break
+		}
+	}
+
+	return writeUserData(user_data)
+}
+
+func CompleteUserFields(incomplete_user User, old_user User) User {
+	if incomplete_user.Email != "" {
+		old_user.Email = incomplete_user.Email
+	}
+
+	if incomplete_user.Password != "" {
+		old_user.Password = incomplete_user.Password
+	}
+
+	if incomplete_user.UserName != "" {
+		old_user.UserName = incomplete_user.UserName
+	}
+
+	if incomplete_user.Phone != "" {
+		old_user.Phone = incomplete_user.Phone
+	}
+
+	if incomplete_user.BDay != "" {
+		old_user.BDay = incomplete_user.BDay
+	}
+
+	if incomplete_user.Role != "" {
+		old_user.Role = incomplete_user.Role
+	}
+
+	if incomplete_user.Contry != "" {
+		old_user.Contry = incomplete_user.Contry
+	}
+
+	if incomplete_user.Gender != "" {
+		old_user.Gender = incomplete_user.Gender
+	}
+
+	if incomplete_user.Photo != "" {
+		old_user.Photo = incomplete_user.Photo
+	}
+
+	old_user.Agreement = incomplete_user.Agreement
+
+	return old_user
+}
+
+func SaveUserByID(id int, user_data User) error {
+	users_data, err := getUserData()
+	if err != nil {
+		log.Println("Error getting user data:", err)
+		return err
+	}
+
+	for i := 0; i < len(users_data); i++ {
+		if users_data[i].ID == id {
+			users_data[i] = user_data
+			break
+		}
+	}
+
+	return writeUserData(users_data)
 }

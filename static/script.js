@@ -40,8 +40,8 @@ function HomePage() {
 
     mainElement.appendChild(titleElement);
 
-	const wrapperElement = document.createElement("div")
-	wrapperElement.className = "home-btn-wrapper";
+    const wrapperElement = document.createElement("div")
+    wrapperElement.className = "home-btn-wrapper";
 
     const loginButton = document.createElement("button");
     loginButton.textContent = "Login";
@@ -58,8 +58,8 @@ function HomePage() {
     });
 
     wrapperElement.appendChild(registerButton);
-	
-	mainElement.appendChild(wrapperElement)
+
+    mainElement.appendChild(wrapperElement)
 }
 
 async function Dashboard(userAuthority) {
@@ -149,36 +149,37 @@ async function Dashboard(userAuthority) {
                 const userDetailedInfoContainer = document.getElementById("user-detailed-info");
                 userDetailedInfoContainer.innerHTML = "";
 
+                const photoUrl = `/uploads/${user.photo}`;
+
                 const editForm = document.createElement("form");
                 editForm.innerHTML = `
-                    <label>Username: <input type="text" name="username" value="${user.username}"></label>
-                    <label>Email: <input type="email" name="email" value="${user.email}"></label>
-                    <label>Phone: <input type="tel" name="phone" value="${user.phone}"></label>
-                    <label>Country: <input type="text" name="country" value="${user.contry}"></label>
-                    <label>Birthdate: <input type="date" name="bday" value="${user.bday}"></label>
-                    <label>Gender: <select name="gender">
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select></label>
-                    <button type="submit">Save</button>
-                `;
+                        <label>Username: <input type="text" name="username" value="${user.username}"></label>
+                        <label>Email: <input type="email" name="email" value="${user.email}"></label>
+                        <label>Phone: <input type="tel" name="phone" value="${user.phone}"></label>
+                        <label>Country: <input type="text" name="country" value="${user.contry}"></label>
+                        <label>Birthdate: <input type="date" name="bday" value="${user.bday}"></label>
+                        <label>Gender: <select name="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select></label>
+                        <label>Role: <input type="text" name="role" value="${user.role}"></label>
+                        <label>Photo: 
+                            <img src="${photoUrl}" alt="User Photo" style="max-width: 150px; max-height: 150px;">
+                            <input type="file" name="photo">
+                        </label>
+                        <label>Agreement: <input type="checkbox" name="agreement" value="${user.agreement}"></label>
+                        <button type="submit">Save</button>
+                    `;
 
                 editForm.querySelector(`select[name="gender"]`).value = user.gender;
 
                 editForm.addEventListener("submit", async (event) => {
                     event.preventDefault();
                     const formData = new FormData(editForm);
-                    const updatedUser = {
-                        id: user.id,
-                        username: formData.get("username"),
-                        email: formData.get("email"),
-                        phone: formData.get("phone"),
-                        country: formData.get("country"),
-                        bday: formData.get("bday")
-                    };
+                    formData.append("id", user.id);
 
-                    await updateUser(updatedUser);
+                    await updateUser(formData);
                     userDetailedInfoContainer.innerHTML = "";
                     Dashboard("admin");
                 });
@@ -195,7 +196,7 @@ async function Dashboard(userAuthority) {
         userDetailedInfoContainer.id = "user-detailed-info";
         userDetailedInfoContainer.className = "centered-items-in-column user-detailed-info";
 
-        usersListContainer.appendChild(userDetailedInfoContainer)
+        usersListContainer.appendChild(userDetailedInfoContainer);
 
         mainElement.appendChild(usersListContainer);
     } catch (error) {
@@ -203,15 +204,16 @@ async function Dashboard(userAuthority) {
     }
 }
 
-async function updateUser(user) {
+async function updateUser(formData) {
+    console.log("Updating user...");
+    console.log("Form data: ", formData);
     try {
-        const response = await fetch(`/api/users/${user.id}`, {
+        const response = await fetch(`/api/users/${formData.get("id")}`, {
             method: "put",
             headers: {
-                "Authorization": token,
-                "Content-Type": "application/json"
+                "Authorization": token
             },
-            body: JSON.stringify(user)
+            body: formData
         });
 
         if (!response.ok) {
