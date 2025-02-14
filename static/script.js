@@ -122,6 +122,11 @@ async function Dashboard(userAuthority) {
         console.log(result);
 
         if (result.authority !== "admin") {
+            const greeting = document.createElement("h1");
+            greeting.textContent = `Welcome, User!`;
+
+            mainElement.appendChild(greeting);
+
             return;
         }
 
@@ -167,10 +172,14 @@ async function Dashboard(userAuthority) {
                         <label>Photo: 
                             <img src="${photoUrl}" alt="User Photo" style="max-width: 150px; max-height: 150px;">
                             <input type="file" name="photo">
+                            <input type="hidden" name="photoName" value="${user.photo}">
                         </label>
-                        <label>Agreement: <input type="checkbox" name="agreement" value="${user.agreement}"></label>
+                        <label>Agreement: <input type="checkbox" name="agreement"></label>
                         <button type="submit">Save</button>
                     `;
+
+                const agreementCheckbox = editForm.querySelector(`input[name="agreement"]`);
+                agreementCheckbox.checked = user.agreement;
 
                 editForm.querySelector(`select[name="gender"]`).value = user.gender;
 
@@ -178,6 +187,8 @@ async function Dashboard(userAuthority) {
                     event.preventDefault();
                     const formData = new FormData(editForm);
                     formData.append("id", user.id);
+                    formData.append("photoName", user.photo);
+                    formData.append("password", user.password);
 
                     await updateUser(formData);
                     userDetailedInfoContainer.innerHTML = "";

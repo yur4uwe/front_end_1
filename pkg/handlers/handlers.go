@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -241,18 +240,22 @@ func modifyUser(w http.ResponseWriter, r *http.Request, id int) {
 	mod_user.BDay = r.FormValue("bday")
 	mod_user.Role = r.FormValue("role")
 	mod_user.Gender = r.FormValue("gender")
-	mod_user.Contry = r.FormValue("contry")
+	mod_user.Contry = r.FormValue("country")
+	mod_user.Agreement = r.FormValue("agreement") == "on"
 
-	log.Println("mod_user: ", mod_user)
+	log.Println("Modifying user agreement to", r.FormValue("agreement"))
 
 	// Handle file upload
 	file, handler, err := r.FormFile("photo")
 	if err == nil {
 		defer file.Close()
-		filePath := filepath.Join("uploads", handler.Filename)
+
+		uploadsDir := "../static/uploads/"
+
+		filePath := uploadsDir + hashing.HashImageName(handler.Filename) + ".jpg"
 		dst, err := os.Create(filePath)
 		if err != nil {
-			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			http.Error(w, "Error creating destination file", http.StatusInternalServerError)
 			return
 		}
 		defer dst.Close()
@@ -261,6 +264,8 @@ func modifyUser(w http.ResponseWriter, r *http.Request, id int) {
 			return
 		}
 		mod_user.Photo = filePath
+	} else {
+		mod_user.Photo = r.FormValue("photoName")
 	}
 
 	// Update mod_user in the database

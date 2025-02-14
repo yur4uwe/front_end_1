@@ -17,5 +17,5 @@ func HashImageName(imageName string) string {
 	name := strings.Split(imageName, ".")[0]
 	hash := sha256.New()
 	hash.Write([]byte(name + time.Now().Format(time.RFC3339)))
-	return hex.EncodeToString(hash.Sum(nil))
+	return hex.EncodeToString(hash.Sum(nil))[:16]
 }
