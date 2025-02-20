@@ -120,7 +120,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := user.GetUser(email, password)
 	if err != nil {
-		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		http.Error(w, "Invalid email or password", http.StatusBadRequest)
 		return
 	}
 
