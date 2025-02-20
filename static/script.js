@@ -23,7 +23,6 @@ const submitFormCallback = async (event) => {
     } catch (error) {
         console.error(error);
     }
-    // Handle the response (e.g., navigate to another page, show a message, etc.)
 };
 
 function HomePage() {
@@ -176,6 +175,7 @@ async function Dashboard(userAuthority) {
                         </label>
                         <label>Agreement: <input type="checkbox" name="agreement"></label>
                         <button type="submit">Save</button>
+                        <button type="button" id="delete-btn">Delete</button>
                     `;
 
                 const agreementCheckbox = editForm.querySelector(`input[name="agreement"]`);
@@ -196,6 +196,31 @@ async function Dashboard(userAuthority) {
                 });
 
                 userDetailedInfoContainer.appendChild(editForm);
+
+                const deleteButton = document.getElementById("delete-btn");
+                deleteButton.addEventListener("click", async () => {
+                    const confirmed = confirm("Are you sure you want to delete this user?");
+                    if (confirmed) {
+                        try {
+                            const response = await fetch(`/api/users/${user.id}`, {
+                                method: "delete",
+                                headers: {
+                                    "Authorization": token
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error("Failed to delete user");
+                            }
+
+                            console.log("User deleted successfully");
+                            userDetailedInfoContainer.innerHTML = "";
+                            Dashboard("admin");
+                        } catch (error) {
+                            console.error(error);
+                        }
+                    }
+                });
             });
 
             usersShortListContainer.appendChild(userElement);
@@ -206,6 +231,7 @@ async function Dashboard(userAuthority) {
         const userDetailedInfoContainer = document.createElement("div");
         userDetailedInfoContainer.id = "user-detailed-info";
         userDetailedInfoContainer.className = "centered-items-in-column user-detailed-info";
+        userDetailedInfoContainer.innerHTML = "<h1>Choose a user to see his detailed info</h1>";
 
         usersListContainer.appendChild(userDetailedInfoContainer);
 
